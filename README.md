@@ -1,5 +1,37 @@
 # React + TypeScript + Vite
 
+# 🤖 AI Detective
+
+A website analyzer built with AI. Enter any URL and get instant insights on tech stack, performance, SEO, and improvement suggestions.
+
+## ⚡ Built with Vibecoding
+
+This project was built using **vibecoding** — AI-assisted development where the logic, structure, and code were generated through natural language prompts with Claude AI.
+
+## 🛠 Tech Stack
+
+- React + Vite + TypeScript
+- Tailwind CSS + shadcn/ui
+- OpenAI GPT-4o-mini API
+- Bun (package manager)
+
+## ✨ Features
+
+- Tech stack detection
+- Performance / SEO / Accessibility / Best Practices scores
+- SEO checklist
+- AI-powered improvement suggestions
+- Dark mode
+
+## 🚀 Getting Started
+
+```bash
+bun install
+bun run dev
+```
+
+Add `.env`:
+
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
 Currently, two official plugins are available:
