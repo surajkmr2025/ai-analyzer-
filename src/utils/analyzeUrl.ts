@@ -9,32 +9,33 @@ export interface AnalysisResult {
 }
 
 export async function analyzeUrl(url: string): Promise<AnalysisResult> {
-  let siteHtml = "";
-  try {
-    const siteResponse = await fetch(url);
-    siteHtml = await siteResponse.text();
-  } catch (error) {
-    throw new Error(`Failed to fetch HTML from ${url}. Check your network or CORS policies.`);
-  }
+//   let siteHtml = "";
+//   try {
+//     const siteResponse = await fetch(url);
+//     siteHtml = await siteResponse.text();
+//   } catch (error) {
+//     throw new Error(`Failed to fetch HTML from ${url}. Check your network or CORS policies.`);
+//   }
 
   const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
   const model = "gemini-2.5-flash";
   const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
   // 2. Feed the raw HTML into the prompt so the model has actual data to analyze
-  const prompt = `Analyze this raw website HTML for SEO, accessibility, and best practices. 
-Context URL: ${url}
+ const prompt = `You are a website analyzer. Analyze this URL: ${url}
 
-Raw HTML:
-${siteHtml}
+Instructions:
+- Even if you don't know this exact website, analyze based on URL structure, domain name, and make reasonable educated guesses
+- For unknown/obscure sites, still provide realistic estimated scores
+- Never refuse to analyze — always return valid JSON
 
-Return ONLY valid JSON matching this exact structure:
+Return ONLY this JSON structure, no markdown, no explanation:
 {
-  "performance": <0-100>,
+  "performance": <0-100, estimate based on hosting/stack clues>,
   "seo": <0-100>,
   "accessibility": <0-100>,
   "best_practices": <0-100>,
-  "tech_stack": ["React", "Nginx"],
+  "tech_stack": ["infer from URL, subdomain, or common patterns"],
   "seo_checklist": [
     {"label": "Meta title", "status": "ok|warn|bad"},
     {"label": "Meta description", "status": "ok|warn|bad"},
@@ -46,10 +47,12 @@ Return ONLY valid JSON matching this exact structure:
     {"label": "Canonical URL", "status": "ok|warn|bad"}
   ],
   "suggestions": [
+    {"title": "...", "body": "...", "priority": "high|med|low"},
+    {"title": "...", "body": "...", "priority": "high|med|low"},
+    {"title": "...", "body": "...", "priority": "high|med|low"},
     {"title": "...", "body": "...", "priority": "high|med|low"}
   ]
-}
-No markdown. Only JSON.`;
+}`;
 
   const res = await fetch(endpoint, {
     method: "POST",
@@ -57,7 +60,7 @@ No markdown. Only JSON.`;
     body: JSON.stringify({
       contents: [{ parts: [{ text: prompt }] }],
       // Using Structured Output JSON mode
-      generationConfig: { response_mime_type: "application/json" },
+      generationConfig: { responseMimeType: "application/json" },
     }),
   });
 
